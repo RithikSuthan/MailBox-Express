@@ -1,7 +1,7 @@
 import smtplib
 from getpass import getpass
 
-def send_email(sender_email, send_to_email, subject, msg, password):
+def send_email(sender_email, send_to_email, subject, msg, password,rn):
     try:
         message = f"Subject: {subject}\n\n{msg}"
 
