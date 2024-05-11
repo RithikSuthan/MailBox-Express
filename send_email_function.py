@@ -2,6 +2,7 @@ import smtplib
 from getpass import getpass
 
 def send_email(sender_email, send_to_email, subject, msg, password,rn):
+    result=""
     try:
         message = f"Subject: {subject}\n\n{msg}"
 
@@ -10,10 +11,12 @@ def send_email(sender_email, send_to_email, subject, msg, password,rn):
         server.login(sender_email, password)
         server.sendmail(sender_email, send_to_email, message)
         server.quit()
-        print("\nEmail sent successfully")
+        print("\nOTP sent successfully")
+        result="OTP sent successfully"
     except Exception as e:
         print("\nEmail failed to send:", e)
-
+        result="Email failed to send"
+    return result
 # sender_email = "rithikmanagement@gmail.com"
 # send_to_email = "rithiksuthan123@gmail.com"
 # subject = "Mail Check"

@@ -18,9 +18,9 @@ def send_email_route():
     message = "Hi "+data.get('name')+" this is your otp "+str(rn)
     password = "pjjn laiz iqvb ybbd"
 
-    send_email(sender_email, send_to_email, subject, message, password,rn)
+    result=send_email(sender_email, send_to_email, subject, message, password,rn)
 
-    return jsonify({"message": "Email sent successfully",
+    return jsonify({"message": result,
                     "otp":str(rn)}), 200
 
 
