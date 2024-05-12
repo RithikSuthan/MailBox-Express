@@ -17,6 +17,24 @@ def send_email(sender_email, send_to_email, subject, msg, password,rn):
         print("\nEmail failed to send:", e)
         result="Email failed to send"
     return result
+
+
+def send_report(sender_email, send_to_email, subject, msg, password):
+    result=""
+    try:
+        message = f"Subject: {subject}\n\n{msg}"
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()  # Fix typo here
+        server.login(sender_email, password)
+        server.sendmail(sender_email, send_to_email, message)
+        server.quit()
+        print("\nReport sent successfully")
+        result="Report sent successfully"
+    except Exception as e:
+        print("\nEmail failed to send:", e)
+        result="Email failed to send"
+    return result
 # sender_email = "rithikmanagement@gmail.com"
 # send_to_email = "rithiksuthan123@gmail.com"
 # subject = "Mail Check"
