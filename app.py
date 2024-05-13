@@ -91,7 +91,7 @@ def send_id_card():
         c.drawString(280, letter[1] - 160, f'Email: {employee_email}')
         c.drawString(280, letter[1] - 190, f'Mobile: {employee_mobile}')
         c.drawString(280, letter[1] - 220, f'Company: {company}')
-        c.save()
+        # c.save()
         result = send_idCard(pdf_filename, sender_email, employee_email, "Access Card", subject, password)
         return jsonify({"message": result}), 200
     except Exception as e:
