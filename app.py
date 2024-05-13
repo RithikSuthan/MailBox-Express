@@ -46,6 +46,7 @@ def report_manager_add_employee():
                     }), 200
 
 
+@cross_origin()
 @app.route('/sendidcard', methods=['POST'])
 def send_id_card():
     data = request.get_json()
