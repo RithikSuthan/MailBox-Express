@@ -36,12 +36,11 @@ def report_manager_add_employee():
     sender_email = "rithikmanagement@gmail.com"
     password = "pjjn laiz iqvb ybbd"
     name = data.get('name')
-    mail = data.get('email')
+    mail = data.get('mail')
     managerEmail = data.get('managerEmail')
     subject = "New Employee Added"
     mobile = data.get('mobile')
     message = name + " will work under you and is mobile number is " + str(mobile) + " and is email is " + str(mail);
-    print(data)
     result = send_report(sender_email, managerEmail, subject, message, password)
     return jsonify({"message": result,
                     }), 200
@@ -49,7 +48,6 @@ def report_manager_add_employee():
 
 @app.route('/sendidcard', methods=['POST'])
 def send_id_card():
-    print("Send id card called")
     data = request.get_json()
     sender_email = "rithikmanagement@gmail.com"
     password = "pjjn laiz iqvb ybbd"
