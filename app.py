@@ -1,6 +1,9 @@
 import tempfile
 import urllib
+from io import BytesIO
+import base64
 
+from PIL import Image
 from flask import Flask
 from send_email_function import send_email, send_report, send_idCard
 from flask_cors import CORS, cross_origin
@@ -48,7 +51,6 @@ def report_manager_add_employee():
     return jsonify({"message": result,
                     }), 200
 
-
 @cross_origin()
 @app.route('/sendidcard', methods=['POST'])
 def send_id_card():
@@ -64,26 +66,24 @@ def send_id_card():
     pdf_filename = f'{employee_name}_id_card.pdf'
     subject="Hi "+employee_name+(" ,Here it is your Access Card .Carry the Access Card Everywhere in the office "
                                  " .Welcome to the ")+company+"  family."
+
+    base64_string = profile_image_path
     try:
         c = canvas.Canvas(pdf_filename, pagesize=letter)
         c.setFillColorRGB(0.8, 0.8, 0.8)  # Light gray background color
         c.rect(0, 0, letter[0], letter[1], fill=True)  # Background color fill
         c.setStrokeColorRGB(0, 0, 0)  # Black border color
         c.rect(10, 10, letter[0] - 20, letter[1] - 20)  # Border around the ID card
+
         try:
-            profile_image = ImageReader(profile_image_path)
+            image_data = base64.b64decode(base64_string.split(",")[1])  # Extracting image data after the comma
+            img = Image.open(BytesIO(image_data))
+            out_jpg = img.convert('RGB')
+            out_jpg.save("sample.jpeg")
         except Exception as e:
-            # Handle the exception (e.g., image file not found)
-            print(f"Error loading profile image: {e}")
-            # Use a default image or take alternative action
-            image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png"
-            # Download the image to a temporary file
-            with urllib.request.urlopen(image_url) as response:
-                with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-                    tmp_file.write(response.read())
-                    tmp_file_path = tmp_file.name
-            profile_image = ImageReader(tmp_file_path)
-        c.drawImage(profile_image, 50, letter[1] - 250, width=200, height=200, mask='auto')
+            print(e)
+        # c = canvas.Canvas("output.pdf")
+        c.drawImage("sample.jpeg", 50, letter[1] - 250, width=200, height=200, mask='auto')
         c.setFont("Helvetica-Bold", 16)
         c.setFillColorRGB(0, 0, 0)  # Black color for text
         c.drawString(280, letter[1] - 100, f'Name: {employee_name}')
