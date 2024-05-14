@@ -1,25 +1,12 @@
-import tempfile
-import urllib
-from io import BytesIO
-import base64
-
-from PIL import Image
 from flask import Flask
 from send_email_function import send_email, send_report, send_idCard
 from flask_cors import CORS, cross_origin
 import random
 from flask import request, jsonify
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-import smtplib
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 from send_email_function import send_idCard  # Import your send_email function here
-import pdfkit
-import imgkit
 app = Flask(__name__)
 CORS(app)
 
@@ -57,6 +44,7 @@ def report_manager_add_employee():
     return jsonify({"message": result,
                     }), 200
 
+
 @cross_origin()
 @app.route('/sendidcard', methods=['POST'])
 def send_id_card():
@@ -68,44 +56,34 @@ def send_id_card():
     employee_email = data['email']
     employee_mobile = data['phoneNumber']
     company = data['company']
-    profile_image_base64 = data["profileImage"]
-    subject = f"Hi {employee_name}, here is your Access Card. Carry the Access Card Everywhere in the office. Welcome to the {company} family."
-
+    # profile_image_path = data["profileImage"]
+    profile_image_path = "logo.JPG"
+    pdf_filename = f'{employee_name}_id_card.pdf'
+    subject="Hi "+employee_name+(" ,Here it is your Access Card .Carry the Access Card Everywhere in the office "
+                                 " .Welcome to the ")+company+"  family."
     try:
-        # Construct HTML email content with ID card template
-        html_content = f"""
-        <html>
-        <head><title>ID Card</title></head>
-        <body>
-            <h1>ID Card</h1>
-            <img src='data:image/jpeg;base64,{profile_image_base64}' width='200'>
-            <p>Name: {employee_name}</p>
-            <p>Position: {employee_position}</p>
-            <p>Email: {employee_email}</p>
-            <p>Mobile: {employee_mobile}</p>
-            <p>Company: {company}</p>
-        </body>
-        </html>
-        """
-
-        # Create the email message
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = employee_email
-        msg['Subject'] = subject
-
-        # Attach HTML content as email body
-        msg.attach(MIMEText(html_content, 'html'))
-
-        # Send the email
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender_email, password)
-            server.send_message(msg)
-
-        return jsonify({"message": "Email sent successfully"}), 200
-
+        c = canvas.Canvas(pdf_filename, pagesize=letter)
+        c.setFillColorRGB(0.8, 0.8, 0.8)  # Light gray background color
+        c.rect(0, 0, letter[0], letter[1], fill=True)  # Background color fill
+        c.setStrokeColorRGB(0, 0, 0)  # Black border color
+        c.rect(10, 10, letter[0] - 20, letter[1] - 20)  # Border around the ID card
+        if profile_image_path!="":
+            profile_image = ImageReader(profile_image_path)
+        else:
+            profile_image = ImageReader("https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png")
+        c.drawImage(profile_image, 50, letter[1] - 250, width=200, height=200, mask='auto')
+        c.setFont("Helvetica-Bold", 16)
+        c.setFillColorRGB(0, 0, 0)  # Black color for text
+        c.drawString(280, letter[1] - 100, f'Name: {employee_name}')
+        c.drawString(280, letter[1] - 130, f'Position: {employee_position}')
+        c.drawString(280, letter[1] - 160, f'Email: {employee_email}')
+        c.drawString(280, letter[1] - 190, f'Mobile: {employee_mobile}')
+        c.drawString(280, letter[1] - 220, f'Company: {company}')
+        c.save()
+        result = send_idCard(pdf_filename, sender_email, employee_email, "Access Card", subject, password)
+        return jsonify({"message": result}), 200
     except Exception as e:
-        print("Error:", e)
+        print("Error")
         return jsonify({"error": str(e)}), 500
 
 
