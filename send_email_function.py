@@ -5,7 +5,8 @@ from email import encoders
 from email.mime.text import MIMEText
 from getpass import getpass
 
-def send_email(sender_email, send_to_email, subject, msg, password,rn):
+
+def send_email(sender_email, send_to_email, subject, msg, password):
     result=""
     try:
         message = f"Subject: {subject}\n\n{msg}"
@@ -17,6 +18,23 @@ def send_email(sender_email, send_to_email, subject, msg, password,rn):
         server.quit()
         print("\nOTP sent successfully")
         result="OTP sent successfully"
+    except Exception as e:
+        print("\nEmail failed to send:", e)
+        result="Email failed to send"
+    return result
+
+def send_email_remainder(sender_email, send_to_email, subject, msg, password):
+    result=""
+    try:
+        message = f"Subject: {subject}\n\n{msg}"
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()  # Fix typo here
+        server.login(sender_email, password)
+        server.sendmail(sender_email, send_to_email, message)
+        server.quit()
+        print("\nEmail sent successfully")
+        result="Email sent successfully"
     except Exception as e:
         print("\nEmail failed to send:", e)
         result="Email failed to send"

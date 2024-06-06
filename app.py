@@ -1,7 +1,7 @@
 import io
 
 from flask import Flask
-from send_email_function import send_email, send_report, send_idCard
+from send_email_function import send_email, send_report, send_idCard, send_email_remainder
 from flask_cors import CORS, cross_origin
 import random
 from flask import request, jsonify
@@ -25,7 +25,7 @@ def send_email_route():
     message = "Hi " + data.get('name') + " this is your otp " + str(rn)
     password = "pjjn laiz iqvb ybbd"
 
-    result = send_email(sender_email, send_to_email, subject, message, password, rn)
+    result = send_email(sender_email, send_to_email, subject, message, password)
 
     return jsonify({"message": result,
                     "otp": str(rn)}), 200
@@ -147,6 +147,19 @@ def send_id_card():
 #     except Exception as e:
 #         print("Error")
 #         return jsonify({"error": str(e)}), 500
+
+@cross_origin()
+@app.route("/sendRemainder",methods=['POST'])
+def sendRemainder():
+    data=request.get_json()
+    sender_email = "rithikmanagement@gmail.com"
+    send_to_email = data.get('mail')
+    subject = data.get('subject')
+    message = data.get('message')
+    password = "pjjn laiz iqvb ybbd"
+    print(send_to_email)
+    result = send_email_remainder(sender_email, send_to_email, subject, message, password)
+    return jsonify({"message": result}), 200
 
 
 if __name__ == '__main__':
