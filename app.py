@@ -162,5 +162,19 @@ def sendRemainder():
     return jsonify({"message": result}), 200
 
 
+@cross_origin()
+@app.route("/sendforgetPassword",methods=['POST'])
+def sendforgetPassword():
+    data=request.get_json()
+    sender_email = "rithikmanagement@gmail.com"
+    send_to_email = data.get('mail')
+    subject = data.get('subject')
+    message = data.get('message')
+    password = "pjjn laiz iqvb ybbd"
+    print(send_to_email)
+    result = send_email_remainder(sender_email, send_to_email, subject, message, password)
+    return jsonify({"message": result}), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
