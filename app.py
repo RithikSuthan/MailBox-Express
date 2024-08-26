@@ -175,6 +175,16 @@ def sendforgetPassword():
     result = send_email_remainder(sender_email, send_to_email, subject, message, password)
     return jsonify({"message": result}), 200
 
+@app.route("/contact",methods=['POST'])
+def getContact():
+    data=request.get_json()
+    sender_email = "rithikmanagement@gmail.com"
+    send_to_email = "rithiksuthan123@gmail.com"
+    subject = "Message from Portfolio from "+data.get('from_name')
+    message = data.get('message')+" .Further contact at "+data.get('email_id')
+    password = "pjjn laiz iqvb ybbd"
+    result = send_email_remainder(sender_email, send_to_email, subject, message, password)
+    return jsonify({"message": "Mail Sent Successfully"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
